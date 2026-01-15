@@ -1,0 +1,96 @@
+@model Coworking.Models.Booking
+@{
+    ViewData["Title"] = "Booking Details";
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-action="MyBookings">My Bookings</a></li>
+            <li class="breadcrumb-item active">Booking #@Model.Id</li>
+        </ol>
+    </nav>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="premium-card p-5">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="fw-bold">Booking #@Model.Id</h2>
+                        <p class="text-muted mb-0">Created on @Model.CreatedAt.ToString("MMM dd, yyyy")</p>
+                    </div>
+                    <span class="badge-@(Model.Status.ToString().ToLower()) fs-6">@Model.Status</span>
+                </div>
+                
+                <hr class="my-4">
+                
+                <!-- Room Information -->
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3">Workspace Details</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Room Name</label>
+                            <p class="fw-bold mb-0">@Model.Room.Name</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Capacity</label>
+                            <p class="fw-bold mb-0"><i class="fas fa-users me-1"></i>@Model.Room.Capacity People</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Booking Information -->
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-3">Booking Information</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Date</label>
+                            <p class="fw-bold mb-0">@Model.StartTime.ToString("MMMM dd, yyyy")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Duration</label>
+                            <p class="fw-bold mb-0">@((Model.EndTime - Model.StartTime).TotalHours) hours</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Start Time</label>
+                            <p class="fw-bold mb-0">@Model.StartTime.ToString("h:mm tt")</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">End Time</label>
+                            <p class="fw-bold mb-0">@Model.EndTime.ToString("h:mm tt")</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Price -->
+                <div class="alert alert-success d-flex justify-content-between align-items-center">
+                    <span class="fw-bold">Total Price</span>
+                    <span class="fs-3 fw-bold">$@Model.TotalPrice</span>
+                </div>
+                
+                <!-- Actions -->
+                @if (Model.Status == Coworking.Models.BookingStatus.Confirmed || Model.Status == Coworking.Models.BookingStatus.Pending)
+                {
+                    <div class="d-flex gap-3">
+                        <form asp-action="Cancel" asp-route-id="@Model.Id" method="post" class="flex-fill"
+                              onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                <i class="fas fa-times me-2"></i>Cancel Booking
+                            </button>
+                        </form>
+                        <a asp-action="MyBookings" class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Bookings
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <a asp-action="MyBookings" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Bookings
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,58 @@
+@model Coworking.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold gradient-text">Edit Profile</h1>
+                <p class="lead text-muted">Update your account information</p>
+            </div>
+            
+            <div class="premium-card p-4">
+                <form asp-action="Edit" method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="FullName" class="form-label fw-bold"></label>
+                        <input asp-for="FullName" class="form-control form-control-premium" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="Email" class="form-label fw-bold"></label>
+                        <input asp-for="Email" class="form-control form-control-premium" readonly />
+                        <small class="text-muted">Email cannot be changed</small>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="PhoneNumber" class="form-label fw-bold"></label>
+                        <input asp-for="PhoneNumber" class="form-control form-control-premium" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label asp-for="CompanyName" class="form-label fw-bold"></label>
+                        <input asp-for="CompanyName" class="form-control form-control-premium" />
+                        <span asp-validation-for="CompanyName" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-premium flex-fill">
+                            <i class="fas fa-save me-2"></i>Save Changes
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

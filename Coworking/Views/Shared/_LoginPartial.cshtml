@@ -1,0 +1,54 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Coworking.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+@if (SignInManager.IsSignedIn(User))
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Rooms" asp-action="Index">Browse Rooms</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Bookings" asp-action="MyBookings">My Bookings</a>
+    </li>
+    
+    @if (User.IsInRole("Administrator"))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Rooms" asp-action="Manage">Manage Rooms</a>
+        </li>
+    }
+    
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            @UserManager.GetUserAsync(User).Result?.FullName
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">My Profile</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+                <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="dropdown-item">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Rooms" asp-action="Index">Browse Rooms</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+    </li>
+}
+</ul>

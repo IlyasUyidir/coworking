@@ -1,0 +1,118 @@
+@model Coworking.ViewModels.RoomViewModel
+@{
+    ViewData["Title"] = "Edit Room";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold gradient-text">Edit Room</h1>
+                <p class="lead text-muted">Update workspace information</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="premium-card p-4">
+                        <form asp-action="Edit" method="post">
+                            <input type="hidden" asp-for="Id" />
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="Name" class="form-label fw-bold"></label>
+                                <input asp-for="Name" class="form-control form-control-premium" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label asp-for="Capacity" class="form-label fw-bold"></label>
+                                    <input asp-for="Capacity" type="number" min="1" class="form-control form-control-premium" />
+                                    <span asp-validation-for="Capacity" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-6">
+                                    <label asp-for="PricePerHour" class="form-label fw-bold"></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input asp-for="PricePerHour" type="number" step="0.01" min="0" class="form-control form-control-premium" />
+                                    </div>
+                                    <span asp-validation-for="PricePerHour" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="Description" class="form-label fw-bold"></label>
+                                <textarea asp-for="Description" class="form-control form-control-premium" rows="4"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label asp-for="ImageUrl" class="form-label fw-bold"></label>
+                                <input asp-for="ImageUrl" class="form-control form-control-premium" />
+                                <small class="text-muted">Enter image URL or leave blank for default</small>
+                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Amenities</label>
+                                <div class="row g-2">
+                                    @if (Model.AllAmenities != null)
+                                    {
+                                        @foreach (var amenity in Model.AllAmenities)
+                                        {
+                                            <div class="col-md-6">
+                                                <div class="form-check">
+                                                    <input type="checkbox" name="SelectedAmenityIds" value="@amenity.Id" 
+                                                           class="form-check-input" id="amenity_@amenity.Id"
+                                                           @(Model.SelectedAmenityIds.Contains(amenity.Id) ? "checked" : "")>
+                                                    <label class="form-check-label" for="amenity_@amenity.Id">
+                                                        <i class="fas @amenity.IconCssClass me-2"></i>@amenity.Name
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsOperational" type="checkbox" class="form-check-input" id="isOperational">
+                                    <label class="form-check-label fw-bold" for="isOperational">Operational</label>
+                                </div>
+                                <small class="text-muted">Uncheck to temporarily disable bookings</small>
+                            </div>
+                            
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn btn-premium flex-fill">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                                <a asp-action="Manage" class="btn btn-outline-secondary flex-fill">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="premium-card p-4 sticky-top" style="top: 100px;">
+                        <h5 class="fw-bold mb-3">Room Info</h5>
+                        <div class="mb-3">
+                            <small class="text-muted d-block">Room ID</small>
+                            <strong>#@Model.Id</strong>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Changes will be reflected immediately
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

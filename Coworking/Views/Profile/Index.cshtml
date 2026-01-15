@@ -1,0 +1,79 @@
+@model Coworking.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold gradient-text">My Profile</h1>
+                <p class="lead text-muted">Manage your account information</p>
+            </div>
+            
+            <div class="premium-card p-5">
+                <!-- Profile Header -->
+                <div class="text-center mb-5">
+                    <div class="d-inline-flex align-items-center justify-content-center bg-gradient text-white rounded-circle mb-3" 
+                         style="width: 100px; height: 100px; font-size: 2.5rem;">
+                        @Model.FullName.Substring(0, 1).ToUpper()
+                    </div>
+                    <h3 class="fw-bold">@Model.FullName</h3>
+                    <p class="text-muted">@Model.Email</p>
+                </div>
+                
+                <!-- Profile Information -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Full Name</label>
+                        <p class="fw-bold">@Model.FullName</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Email</label>
+                        <p class="fw-bold">@Model.Email</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Phone Number</label>
+                        <p class="fw-bold">@(Model.PhoneNumber ?? "Not provided")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small">Company</label>
+                        <p class="fw-bold">@(Model.CompanyName ?? "Not provided")</p>
+                    </div>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="fs-3 fw-bold text-primary">@Model.TotalBookings</div>
+                            <small class="text-muted">Total Bookings</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="fs-3 fw-bold text-success">$@Model.TotalSpent.ToString("N0")</div>
+                            <small class="text-muted">Total Spent</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3 bg-light rounded">
+                            <div class="fs-3 fw-bold text-info">@((DateTime.Now - Model.MemberSince).Days) days</div>
+                            <small class="text-muted">Member Since</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions -->
+                <div class="d-flex gap-3">
+                    <a asp-action="Edit" class="btn btn-premium flex-fill">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </a>
+                    <a asp-controller="Bookings" asp-action="MyBookings" class="btn btn-outline-primary flex-fill">
+                        <i class="fas fa-calendar me-2"></i>My Bookings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

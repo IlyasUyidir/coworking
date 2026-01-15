@@ -1,0 +1,129 @@
+﻿@model List<Coworking.Models.Room>
+@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-content container">
+        <h1 class="hero-title fade-in-up">Welcome to Luxury Coworking</h1>
+        <p class="hero-subtitle fade-in-up">Premium workspace solutions for modern professionals</p>
+        <div class="mt-4 fade-in-up">
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-premium btn-lg me-3">
+                <i class="fas fa-search me-2"></i>Browse Workspaces
+            </a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-premium btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Get Started
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Rooms -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold gradient-text">Featured Workspaces</h2>
+            <p class="text-muted">Discover our premium coworking spaces</p>
+        </div>
+        
+        <div class="row g-4">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var room in Model.Take(3))
+                {
+                    <div class="col-md-4">
+                        <div class="room-card">
+                            <div class="position-relative">
+                                <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "/images/rooms/default-room.jpg" : room.ImageUrl)" 
+                                     alt="@room.Name" class="room-card-image">
+                                <span class="room-card-capacity">
+                                    <i class="fas fa-users me-1"></i>@room.Capacity
+                                </span>
+                                <div class="room-card-overlay">
+                                    <a asp-controller="Rooms" asp-action="Details" asp-route-id="@room.Id" 
+                                       class="btn btn-light btn-sm">
+                                        View Details <i class="fas fa-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="room-card-body">
+                                <h5 class="room-card-title">@room.Name</h5>
+                                <p class="room-card-price">$@room.PricePerHour<span class="text-muted fs-6">/hour</span></p>
+                                <p class="text-muted small">@room.Description?.Substring(0, Math.Min(80, room.Description.Length))...</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <i class="fas fa-building fa-4x text-muted mb-3"></i>
+                    <p class="text-muted">No rooms available at the moment</p>
+                </div>
+            }
+        </div>
+        
+        <div class="text-center mt-5">
+            <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-premium">
+                View All Workspaces <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon text-primary">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h3 class="stats-label">High-Speed WiFi</h3>
+                    <p class="text-muted small">Lightning-fast internet connectivity</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="color: var(--accent-emerald);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h3 class="stats-label">24/7 Access</h3>
+                    <p class="text-muted small">Work on your schedule</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon" style="color: var(--accent-gold);">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <h3 class="stats-label">Free Coffee</h3>
+                    <p class="text-muted small">Complimentary beverages</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="stats-card">
+                    <div class="stats-icon text-danger">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="stats-label">Secure</h3>
+                    <p class="text-muted small">Safe and monitored environment</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container text-center">
+        <h2 class="display-6 fw-bold mb-4">Ready to Get Started?</h2>
+        <p class="lead text-muted mb-4">Join our community of professionals today</p>
+        <a asp-controller="Account" asp-action="Register" class="btn btn-premium btn-lg">
+            <i class="fas fa-rocket me-2"></i>Start Your Journey
+        </a>
+    </div>
+</section>

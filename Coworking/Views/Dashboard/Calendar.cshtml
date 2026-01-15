@@ -1,0 +1,171 @@
+@model List<Coworking.Models.Booking>
+@{
+    ViewData["Title"] = "Calendar";
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <h1 class="display-6 fw-bold gradient-text">Master Calendar</h1>
+        <p class="text-muted">View all bookings across all rooms</p>
+    </div>
+    
+    <div class="premium-card p-4">
+        <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active">Month</button>
+                    <button type="button" class="btn btn-outline-primary">Week</button>
+                    <button type="button" class="btn btn-outline-primary">Day</button>
+                </div>
+                <h4 class="mb-0" id="currentMonth">@DateTime.Now.ToString("MMMM yyyy")</h4>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-secondary" onclick="previousMonth()">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="today()">Today</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="nextMonth()">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calendar Grid -->
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr class="bg-light">
+                        <th>Sun</th>
+                        <th>Mon</th>
+                        <th>Tue</th>
+                        <th>Wed</th>
+                        <th>Thu</th>
+                        <th>Fri</th>
+                        <th>Sat</th>
+                    </tr>
+                </thead>
+                <tbody id="calendarBody">
+                    <!-- Calendar will be populated by JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Legend -->
+        <div class="mt-4 d-flex gap-4 justify-content-center">
+            <div><span class="badge-confirmed me-2"></span> Confirmed</div>
+            <div><span class="badge-pending me-2"></span> Pending</div>
+            <div><span class="badge-cancelled me-2"></span> Cancelled</div>
+            <div><span class="badge-completed me-2"></span> Completed</div>
+        </div>
+    </div>
+    
+    <!-- Bookings List -->
+    <div class="premium-card p-4 mt-4">
+        <h5 class="fw-bold mb-3">All Bookings</h5>
+        @if (Model != null && Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Room</th>
+                            <th>User</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var booking in Model.OrderBy(b => b.StartTime))
+                        {
+                            <tr>
+                                <td>#@booking.Id</td>
+                                <td>@booking.Room.Name</td>
+                                <td>@booking.User.FullName</td>
+                                <td>@booking.StartTime.ToString("MMM dd, yyyy")</td>
+                                <td>@booking.StartTime.ToString("h:mm tt") - @booking.EndTime.ToString("h:mm tt")</td>
+                                <td><span class="badge-@(booking.Status.ToString().ToLower())">@booking.Status</span></td>
+                                <td class="fw-bold">$@booking.TotalPrice</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted text-center py-4">No bookings to display</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    let currentDate = new Date();
+    
+    function renderCalendar() {
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        
+        document.getElementById('currentMonth').textContent = 
+            new Date(year, month).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+        
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        
+        let calendarHTML = '<tr>';
+        let dayCount = 1;
+        
+        // Empty cells before first day
+        for (let i = 0; i < firstDay; i++) {
+            calendarHTML += '<td class="text-muted"></td>';
+        }
+        
+        // Days of month
+        for (let day = 1; day <= daysInMonth; day++) {
+            if ((firstDay + day - 1) % 7 === 0 && day !== 1) {
+                calendarHTML += '</tr><tr>';
+            }
+            
+            const isToday = day === new Date().getDate() && 
+                          month === new Date().getMonth() && 
+                          year === new Date().getFullYear();
+            
+            calendarHTML += `<td class="${isToday ? 'bg-primary bg-opacity-10' : ''}" style="height: 80px; vertical-align: top;">
+                <div class="fw-bold">${day}</div>
+            </td>`;
+        }
+        
+        // Empty cells after last day
+        const remainingCells = 7 - ((firstDay + daysInMonth) % 7);
+        if (remainingCells < 7) {
+            for (let i = 0; i < remainingCells; i++) {
+                calendarHTML += '<td class="text-muted"></td>';
+            }
+        }
+        
+        calendarHTML += '</tr>';
+        document.getElementById('calendarBody').innerHTML = calendarHTML;
+    }
+    
+    function previousMonth() {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderCalendar();
+    }
+    
+    function nextMonth() {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderCalendar();
+    }
+    
+    function today() {
+        currentDate = new Date();
+        renderCalendar();
+    }
+    
+    // Initial render
+    renderCalendar();
+</script>
+}

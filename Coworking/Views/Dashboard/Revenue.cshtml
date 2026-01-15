@@ -1,0 +1,199 @@
+@{
+    ViewData["Title"] = "Revenue Analytics";
+    var selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year;
+    var totalRevenue = ViewBag.TotalRevenue ?? 0m;
+    var yearlyRevenue = ViewBag.YearlyRevenue ?? 0m;
+    var revenueByMonth = ViewBag.RevenueByMonth as Dictionary<string, decimal>;
+    var bookingStats = ViewBag.BookingStats as Dictionary<string, int>;
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-6 fw-bold gradient-text">Revenue Analytics</h1>
+            <p class="text-muted">Financial performance overview</p>
+        </div>
+        <form method="get" class="d-flex gap-2">
+            <select name="year" class="form-select form-control-premium" style="width: 150px;" onchange="this.form.submit()">
+                @for (int year = DateTime.Now.Year; year >= DateTime.Now.Year - 5; year--)
+                {
+                    <option value="@year" selected="@(year == selectedYear)">@year</option>
+                }
+            </select>
+        </form>
+    </div>
+    
+    <!-- Revenue Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="stats-card">
+                <div class="stats-icon text-success">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stats-value">$@totalRevenue.ToString("N0")</div>
+                <div class="stats-label">Total Revenue (All Time)</div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="stats-card">
+                <div class="stats-icon text-primary">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stats-value">$@yearlyRevenue.ToString("N0")</div>
+                <div class="stats-label">Revenue (@selectedYear)</div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="stats-card">
+                <div class="stats-icon text-info">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stats-value">$@((yearlyRevenue / 12).ToString("N0"))</div>
+                <div class="stats-label">Average Monthly</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Revenue Chart -->
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="premium-card p-4">
+                <h5 class="fw-bold mb-4">Revenue by Month (@selectedYear)</h5>
+                <canvas id="revenueChart" height="300"></canvas>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="premium-card p-4">
+                <h5 class="fw-bold mb-4">Booking Statistics</h5>
+                @if (bookingStats != null)
+                {
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Total Bookings</span>
+                            <strong>@bookingStats["Total"]</strong>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Confirmed</span>
+                            <strong>@bookingStats["Confirmed"]</strong>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-success" style="width: @((bookingStats["Confirmed"] * 100.0 / Math.Max(bookingStats["Total"], 1)).ToString("F0"))%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Pending</span>
+                            <strong>@bookingStats["Pending"]</strong>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-warning" style="width: @((bookingStats["Pending"] * 100.0 / Math.Max(bookingStats["Total"], 1)).ToString("F0"))%"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Cancelled</span>
+                            <strong>@bookingStats["Cancelled"]</strong>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-danger" style="width: @((bookingStats["Cancelled"] * 100.0 / Math.Max(bookingStats["Total"], 1)).ToString("F0"))%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Completed</span>
+                            <strong>@bookingStats["Completed"]</strong>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-secondary" style="width: @((bookingStats["Completed"] * 100.0 / Math.Max(bookingStats["Total"], 1)).ToString("F0"))%"></div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <!-- Monthly Breakdown -->
+    <div class="premium-card p-4 mt-4">
+        <h5 class="fw-bold mb-4">Monthly Breakdown</h5>
+        @if (revenueByMonth != null)
+        {
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th class="text-end">Revenue</th>
+                            <th class="text-end">% of Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var month in revenueByMonth)
+                        {
+                            <tr>
+                                <td class="fw-bold">@month.Key</td>
+                                <td class="text-end">$@month.Value.ToString("N2")</td>
+                                <td class="text-end">@((month.Value * 100 / Math.Max(yearlyRevenue, 1)).ToString("F1"))%</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th>Total</th>
+                            <th class="text-end">$@yearlyRevenue.ToString("N2")</th>
+                            <th class="text-end">100%</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('revenueChart');
+    const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(revenueByMonth?.Values ?? Enumerable.Empty<decimal>()));
+    const monthLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(revenueByMonth?.Keys ?? Enumerable.Empty<string>()));
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Revenue ($)',
+                data: revenueData,
+                backgroundColor: 'rgba(102, 126, 234, 0.8)',
+                borderColor: 'rgba(102, 126, 234, 1)',
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return '$' + value.toLocaleString();
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+}

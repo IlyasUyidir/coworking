@@ -1,0 +1,121 @@
+@model Coworking.Models.Room
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Rooms</a></li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+    
+    <div class="row g-4">
+        <!-- Room Image -->
+        <div class="col-lg-8">
+            <div class="premium-card">
+                <img src="@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/rooms/default-room.jpg" : Model.ImageUrl)" 
+                     alt="@Model.Name" class="w-100" style="height: 500px; object-fit: cover; border-radius: var(--radius-xl);">
+            </div>
+            
+            <!-- Room Information -->
+            <div class="mt-4">
+                <h1 class="display-5 fw-bold">@Model.Name</h1>
+                <p class="lead text-muted">@Model.Description</p>
+                
+                <div class="row g-3 my-4">
+                    <div class="col-md-4">
+                        <div class="premium-card p-3 text-center">
+                            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                            <h6>Capacity</h6>
+                            <p class="mb-0 fw-bold">@Model.Capacity People</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="premium-card p-3 text-center">
+                            <i class="fas fa-dollar-sign fa-2x text-success mb-2"></i>
+                            <h6>Price</h6>
+                            <p class="mb-0 fw-bold">$@Model.PricePerHour/hour</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="premium-card p-3 text-center">
+                            <i class="fas fa-check-circle fa-2x text-success mb-2"></i>
+                            <h6>Status</h6>
+                            <p class="mb-0 fw-bold">@(Model.IsOperational ? "Available" : "Unavailable")</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Amenities -->
+                @if (Model.RoomAmenities != null && Model.RoomAmenities.Any())
+                {
+                    <div class="mt-4">
+                        <h4 class="fw-bold mb-3">Amenities</h4>
+                        <div class="d-flex flex-wrap gap-2">
+                            @foreach (var amenity in Model.RoomAmenities)
+                            {
+                                <span class="amenity-icon">
+                                    <i class="fas @amenity.Amenity.IconCssClass"></i>
+                                    @amenity.Amenity.Name
+                                </span>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <!-- Booking Card -->
+        <div class="col-lg-4">
+            <div class="premium-card p-4 sticky-top" style="top: 100px;">
+                <h4 class="fw-bold mb-4">Book This Space</h4>
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Price per hour</span>
+                        <span class="fs-3 fw-bold text-primary">$@Model.PricePerHour</span>
+                    </div>
+                    
+                    @if (Model.IsOperational)
+                    {
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i>Available for booking
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fas fa-times-circle me-2"></i>Currently unavailable
+                        </div>
+                    }
+                </div>
+                
+                @if (Model.IsOperational)
+                {
+                    if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-controller="Bookings" asp-action="Create" asp-route-roomId="@Model.Id" 
+                           class="btn btn-premium w-100 btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-premium w-100 btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Book
+                        </a>
+                    }
+                }
+                
+                <div class="mt-4 text-center">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>Secure booking guaranteed
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

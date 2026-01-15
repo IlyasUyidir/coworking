@@ -1,0 +1,85 @@
+@model List<Coworking.Models.Room>
+@{
+    ViewData["Title"] = "Browse Workspaces";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold gradient-text">Discover Your Perfect Workspace</h1>
+        <p class="lead text-muted">Choose from our premium collection of coworking spaces</p>
+    </div>
+    
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <form method="get" class="d-flex gap-3 justify-content-center">
+                <select name="capacity" class="form-select form-control-premium" style="max-width: 200px;" onchange="this.form.submit()">
+                    <option value="">All Capacities</option>
+                    <option value="2" selected="@(ViewBag.SelectedCapacity == 2)">2+ People</option>
+                    <option value="5" selected="@(ViewBag.SelectedCapacity == 5)">5+ People</option>
+                    <option value="10" selected="@(ViewBag.SelectedCapacity == 10)">10+ People</option>
+                </select>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Rooms Grid -->
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var room in Model)
+            {
+                <div class="col-lg-4 col-md-6">
+                    <div class="room-card">
+                        <div class="position-relative">
+                            <img src="@(string.IsNullOrEmpty(room.ImageUrl) ? "/images/rooms/default-room.jpg" : room.ImageUrl)" 
+                                 alt="@room.Name" class="room-card-image">
+                            <span class="room-card-capacity">
+                                <i class="fas fa-users me-1"></i>@room.Capacity
+                            </span>
+                            @if (!room.IsOperational)
+                            {
+                                <span class="badge bg-danger position-absolute top-0 start-0 m-3">Unavailable</span>
+                            }
+                            <div class="room-card-overlay">
+                                <a asp-action="Details" asp-route-id="@room.Id" class="btn btn-light btn-sm">
+                                    View Details <i class="fas fa-arrow-right ms-2"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="room-card-body">
+                            <h5 class="room-card-title">@room.Name</h5>
+                            <p class="room-card-price">$@room.PricePerHour<span class="text-muted fs-6">/hour</span></p>
+                            <p class="text-muted small mb-3">@room.Description</p>
+                            
+                            @if (room.RoomAmenities != null && room.RoomAmenities.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var amenity in room.RoomAmenities.Take(3))
+                                    {
+                                        <span class="amenity-icon">
+                                            <i class="fas @amenity.Amenity.IconCssClass"></i>
+                                            @amenity.Amenity.Name
+                                        </span>
+                                    }
+                                    @if (room.RoomAmenities.Count > 3)
+                                    {
+                                        <span class="amenity-icon">+@(room.RoomAmenities.Count - 3) more</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h4>No workspaces found</h4>
+                <p class="text-muted">Try adjusting your filters</p>
+            </div>
+        }
+    </div>
+</div>

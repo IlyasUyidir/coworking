@@ -1,0 +1,75 @@
+@model Coworking.ViewModels.BookingViewModel
+@{
+    ViewData["Title"] = "Book a Workspace";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold gradient-text">Book Your Workspace</h1>
+                <p class="lead text-muted">Select your preferred date and time</p>
+            </div>
+            
+            <div class="premium-card p-4">
+                <form asp-action="Create" method="post" id="bookingForm">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                    
+                    <!-- Room Selection -->
+                    <div class="mb-4">
+                        <label asp-for="RoomId" class="form-label fw-bold">Select Workspace</label>
+                        <select asp-for="RoomId" class="form-select form-control-premium" required>
+                            <option value="">Choose a workspace...</option>
+                            @if (Model.AvailableRooms != null)
+                            {
+                                @foreach (var room in Model.AvailableRooms)
+                                {
+                                    <option value="@room.Id" selected="@(Model.RoomId == room.Id)">
+                                        @room.Name - $@room.PricePerHour/hour (Capacity: @room.Capacity)
+                                    </option>
+                                }
+                            }
+                        </select>
+                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                    </div>
+                    
+                    <!-- Date and Time -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="StartTime" class="form-label fw-bold">Start Date & Time</label>
+                            <input asp-for="StartTime" type="datetime-local" class="form-control form-control-premium" required />
+                            <span asp-validation-for="StartTime" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="EndTime" class="form-label fw-bold">End Date & Time</label>
+                            <input asp-for="EndTime" type="datetime-local" class="form-control form-control-premium" required />
+                            <span asp-validation-for="EndTime" class="text-danger"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Price Display -->
+                    <div class="alert alert-info mb-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-info-circle me-2"></i>Estimated Total</span>
+                            <span class="fs-4 fw-bold" id="totalPrice">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Buttons -->
+                    <div class="d-flex gap-3">
+                        <button type="submit" class="btn btn-premium flex-fill">
+                            <i class="fas fa-check me-2"></i>Confirm Booking
+                        </button>
+                        <a asp-controller="Rooms" asp-action="Index" class="btn btn-outline-secondary flex-fill">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
