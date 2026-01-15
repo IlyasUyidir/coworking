@@ -1,0 +1,16 @@
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.user
+*.swp
+*.bak
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+bin/
+obj/
+
+# Operating System files
+.DS_Store
+Thumbs.db
